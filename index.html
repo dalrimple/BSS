@@ -9,8 +9,13 @@
 	</head>
 	<body>
 		<h1>BSS</h1>
-		<a href='https://api.singly.com/oauth/authenticate?client_id=65ab7caa42476b137e5703bf1ad2e876&redirect_uri=http%3A%2F%2Fbss.dev%2Fauth&service=twitter&response_type=token'>Auth</a>
+		<a href='https://api.singly.com/oauth/authenticate?client_id=65ab7caa42476b137e5703bf1ad2e876&redirect_uri=http%3A%2F%2Fbss.dev%2Fauth&service=twitter&response_type=token'>Auth Twitter</a> | 
+		<a href='https://api.singly.com/oauth/authenticate?client_id=65ab7caa42476b137e5703bf1ad2e876&redirect_uri=http%3A%2F%2Fbss.dev%2Fauth&service=gmail&response_type=token'>Auth Gmail</a> | 
+		<a href='#' id='profile'>get profile</a>
 		<div id='output' style='border:1px solid #DDD; padding: 8px;'></div>
+		<input type='text' id='profileName' />
+		<input type='text' id='profileRole' />
+		<a href='#' id='profileSave'>save</a>
 		<script type='text/javascript' data-main='/_js/main.js' src='//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.4/require.min.js'></script>
 	</body>
 </html>

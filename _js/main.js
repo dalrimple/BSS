@@ -14,7 +14,7 @@ requirejs.config({
 
 			//Backbone modules
 			'Router': 'backbone/routers/router',
-			'Output': 'backbone/views/output'
+			'AppState': 'backbone/models/appstate'
 	},
 
 	//These libraries don't follow AMD structures so the dependencies and exports value needs to be explicit
@@ -30,11 +30,9 @@ requirejs.config({
 
 });
 
-require(['Firebase', 'Backbone', 'Router', 'Output'],
-	function(Firebase, Backbone, Router, Output) {
-		var outputView = new Output();
+require(['Firebase', 'Backbone', 'Router'],
+	function(Firebase, Backbone, Router) {
 		var router = new Router({
-			outputView: outputView
 		});
 		Backbone.history.start({pushState: true});
 });
