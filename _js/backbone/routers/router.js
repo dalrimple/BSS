@@ -1,4 +1,4 @@
-define(['Backbone'], function(Backbone) {
+define(['Backbone', 'LoginModel'], function(Backbone, LoginModel) {
 	var Router = Backbone.Router.extend({
 
 		routes: {
@@ -8,29 +8,37 @@ define(['Backbone'], function(Backbone) {
 
 		initialize: function(options) {
 			console.log('Router.initialize()');
+
+			//Testing
 			var that = this;
 			$('#profile').click(function(e) {
 				e.preventDefault();
 				that.getProfile();
 			});
+
 		},
 		auth: function() {
-			//console.log('Router.auth():', Backbone.history.location.hash);
-			var hash = Backbone.history.location.hash;
-			hash = hash.replace('#', '');
-			hash = hash.split('&');
-			var json = {}
-			for (var i in hash) {
-				var keyvar = hash[i].split('=');
-				json[keyvar[0]] = keyvar[1];
+			console.log('Router.auth():', Backbone.history.location.hash);
+			var authInfo = {};
+			var hash = Backbone.history.location.hash.replace('#', '')
+			if (hash) {
+				hash = hash.split('&');
+				for (var i in hash) {
+					var keyvar = hash[i].split('=');
+					authInfo[keyvar[0]] = _.last(keyvar);
+				}
 			}
-			console.log('Router.auth()', json);
-			window.authResponse = json;
 
+			this.trigger('auth', authInfo);
+
+			//console.log('Router.auth()', authInfo);
 			//var dataRef = new Firebase('https://zabinskas-bss.firebaseio.com/');
 			//window.authData = dataRef;
 
-			window.me = new Firebase('https://zabinskas-bss.firebaseio.com/users/' + json.account);
+			return; //TESTING
+
+			window.authResponse = authInfo;
+			window.me = new Firebase('https://zabinskas-bss.firebaseio.com/users/' + authInfo.account);
 			window.me.once('value', function(o) {console.log(o.val())});
 		},
 		getProfile: function() {

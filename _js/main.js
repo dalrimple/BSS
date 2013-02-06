@@ -10,11 +10,17 @@ requirejs.config({
 			'Backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.10/backbone-min',
 
 			//Firebase hosted SaaS backend
-			'Firebase': 'firebase',
+			'Firebase': 'libs/firebase',
 
 			//Backbone modules
+			'sync': 'backbone/sync',
+			'config': 'backbone/models/config',
+			'LoginModel': 'backbone/models/login',
+			'UserModel': 'backbone/models/user',
 			'Router': 'backbone/routers/router',
-			'AppState': 'backbone/models/appstate'
+			'LoginView': 'backbone/views/login',
+			//Miscellaneous
+			'utils': 'utils'
 	},
 
 	//These libraries don't follow AMD structures so the dependencies and exports value needs to be explicit
@@ -30,9 +36,26 @@ requirejs.config({
 
 });
 
-require(['Firebase', 'Backbone', 'Router'],
-	function(Firebase, Backbone, Router) {
-		var router = new Router({
+require(['utils', 'Firebase', 'Backbone', 'LoginModel', 'UserModel', 'Router', 'LoginView'],
+	function(utils, Firebase, Backbone, LoginModel, UserModel, Router, LoginView) {
+		utils.safeConsole();
+		
+		//Router (First. The router can trigger events that are listened to by models and views)
+		var router = new Router({});
+		
+		//Models (Second. They listen for events from the Router)
+		var user = new UserModel({}, {router: router});
+		var login = new LoginModel({}, {router: router});
+
+		//Collections (Third. They're made up of models)
+		
+		//Views (Last. They listen to model & router events. They change models and trigger route navigation)
+		var loginView = new LoginView({
+			model: login,
+			router: router
 		});
+
+		//Start the app
 		Backbone.history.start({pushState: true});
 });
+
