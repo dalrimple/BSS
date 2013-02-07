@@ -55,6 +55,10 @@ require(['utils', 'Firebase', 'Backbone', 'LoginModel', 'UserModel', 'Router', '
 			router: router
 		});
 
+		//Set up some listeners:
+		login.listenTo(router, 'auth', login.routeListener);
+
+
 		//Start the app
 		Backbone.history.start({pushState: true});
 });
