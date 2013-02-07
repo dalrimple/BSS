@@ -17,6 +17,10 @@ Old job numbers can be marked for exclusion from search.
 Job numbers are assigned to an entry by search on number or description.
 Days are navigable by the user. The default day is today's date with future and past navigation possible.
 
+Technologies used
+-----------------
+Firebase
+Singly
 
 Data Structure
 --------------
