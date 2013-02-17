@@ -11,12 +11,29 @@
 		<h1>BSS</h1>
 		
 		<div id='login'>
-			<a href='https://api.singly.com/oauth/authenticate?client_id=65ab7caa42476b137e5703bf1ad2e876&redirect_uri=http%3A%2F%2Fbss.dev%2Fauth&service=twitter&response_type=token'><img src='http://assets.singly.com/service-icons/24px/twitter.png' alt='Twitter Login' /></a>
-			<a href='https://api.singly.com/oauth/authenticate?client_id=65ab7caa42476b137e5703bf1ad2e876&redirect_uri=http%3A%2F%2Fbss.dev%2Fauth&service=gmail&response_type=token'><img src='http://assets.singly.com/service-icons/24px/gmail.png' alt='Gmail Login' /></a>
+			<div data-out>
+				<a href='https://api.singly.com/oauth/authenticate?client_id=65ab7caa42476b137e5703bf1ad2e876&redirect_uri=http%3A%2F%2Fbss.dev%2Fauth&service=twitter&response_type=token'><img src='http://assets.singly.com/service-icons/24px/twitter.png' alt='Twitter Login' /></a>
+				<a href='https://api.singly.com/oauth/authenticate?client_id=65ab7caa42476b137e5703bf1ad2e876&redirect_uri=http%3A%2F%2Fbss.dev%2Fauth&service=gmail&response_type=token'><img src='http://assets.singly.com/service-icons/24px/gmail.png' alt='Gmail Login' /></a>
+			</div>
+			<div data-in>
+				<input type='button' value='logout' />
+			</div>
 			<span class='errors'></span>
+			<a href='#' id='profile'>get profile</a>
 		</div>
 
-		<a href='#' id='profile'>get profile</a>
+		<hr />
+
+		<div id='sandbox'>
+			<input type='button' data-fn='save' value='Save new data to /sandbox' />
+			<input type='button' data-fn='fetch' value='Fetch data from /sandbox' />
+			<input type='button' data-fn='update' value='Update changes to model' />
+			<input type='button' data-fn='push' value='Push new child to /sandbox' />
+			<input type='button' data-fn='delete' value='Remove the new child from /sandbox' />
+		</div>
+
+		<hr />
+
 		<div id='output' style='border:1px solid #DDD; padding: 8px;'></div>
 		<input type='text' id='profileName' />
 		<input type='text' id='profileRole' />

@@ -1,5 +1,7 @@
 define(['Backbone', 'config', 'utils'], function(Backbone, config, utils) {
+	
 	var LoginModel = Backbone.Model.extend({
+	
 		defaults: {
 			firebase: '',
 			access_token: '',
@@ -7,11 +9,8 @@ define(['Backbone', 'config', 'utils'], function(Backbone, config, utils) {
 		},
 
 		initialize: function(attributes, options) {
-			console.log('LoginModel.initialize()', this.attributes, options);
+			//console.log('LoginModel.initialize()', this.attributes, options);
 
-			//this.router = options.router; //TODO: Rather than passing the router, attach listeners in main.js
-			
-			// Event listeners
 		},
 
 		validate: function(attributes, options) {
@@ -23,12 +22,13 @@ define(['Backbone', 'config', 'utils'], function(Backbone, config, utils) {
 			}
 		},
 
-		routeListener: function(params) {
-			console.log('LoginModel.routeListener()', params);
+		authDataListener: function(params) {
+			console.log('LoginModel.authDataListener()', params);
 			this.set(params, {validate: true});
 		},
 
-
 	});
+	
 	return LoginModel;
+
 });

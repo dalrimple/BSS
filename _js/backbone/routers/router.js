@@ -1,4 +1,4 @@
-define(['Backbone', 'LoginModel'], function(Backbone, LoginModel) {
+define(['utils', 'Backbone'], function(utils, Backbone) {
 	var Router = Backbone.Router.extend({
 
 		routes: {
@@ -7,7 +7,7 @@ define(['Backbone', 'LoginModel'], function(Backbone, LoginModel) {
 		},
 
 		initialize: function(options) {
-			console.log('Router.initialize()');
+			//console.log('Router.initialize()');
 
 			//Testing
 			var that = this;
@@ -17,32 +17,23 @@ define(['Backbone', 'LoginModel'], function(Backbone, LoginModel) {
 			});
 
 		},
+		
 		auth: function() {
 			console.log('Router.auth():', Backbone.history.location.hash);
-			var authInfo = {};
-			var hash = Backbone.history.location.hash.replace('#', '')
-			if (hash) {
-				hash = hash.split('&');
-				for (var i in hash) {
-					var keyvar = hash[i].split('=');
-					authInfo[keyvar[0]] = _.last(keyvar);
-				}
-			}
-
-			this.trigger('auth', authInfo);
+			var authInfo = utils.deparam(Backbone.history.location.hash);
+			this.trigger('receivedAuthData', authInfo);
 
 			//console.log('Router.auth()', authInfo);
-			//var dataRef = new Firebase('https://zabinskas-bss.firebaseio.com/');
-			//window.authData = dataRef;
 
 			return; //TESTING
-
-			window.authResponse = authInfo;
 			window.me = new Firebase('https://zabinskas-bss.firebaseio.com/users/' + authInfo.account);
 			window.me.once('value', function(o) {console.log(o.val())});
 		},
+
+		//Testing
 		getProfile: function() {
 			//Log me in
+			//TODO: Replace with correct functionality
 			window.me.auth(window.authResponse.firebase, function(success) {
 				if(success) {
 					console.log("Login Successful!");
@@ -67,11 +58,30 @@ define(['Backbone', 'LoginModel'], function(Backbone, LoginModel) {
 			});
 			/*
 			*/
-
 		},
+
 		main: function(par1, par2, par3, rest) {
-			console.log('Router.main():', par1, par2, par3, rest);
+			//console.log('Router.main():', par1, par2, par3, rest);
+			var data = {};
+			if (par1) {
+				data[par1] = {};
+				if (par2) {
+					data[par1][par2] = {};
+					if (par3) {
+						data[par1][par2][par3] = rest ? rest : Math.random();
+					} else {
+						data[par1][par2] = Math.random();
+					}
+				} else {
+					data[par1] = Math.random();
+				}
+			} else {
+				data.default = Math.random();
+			}
+			this.trigger('sandbox', data);
 		}
+
 	});
+
 	return Router;
 });

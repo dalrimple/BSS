@@ -10,15 +10,18 @@ requirejs.config({
 			'Backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.10/backbone-min',
 
 			//Firebase hosted SaaS backend
-			'Firebase': 'libs/firebase',
+			'Firebase': 'https://cdn.firebase.com/v0/firebase',
 
 			//Backbone modules
-			'sync': 'backbone/sync',
+			'syncOverride': 'backbone/sync',
 			'config': 'backbone/models/config',
 			'LoginModel': 'backbone/models/login',
 			'UserModel': 'backbone/models/user',
+			'SandboxModel': 'backbone/models/sandbox',
+			'SandboxCollection': 'backbone/collections/sandbox',
 			'Router': 'backbone/routers/router',
 			'LoginView': 'backbone/views/login',
+			'SandboxView': 'backbone/views/sandbox',
 			//Miscellaneous
 			'utils': 'utils'
 	},
@@ -33,19 +36,42 @@ requirejs.config({
 			exports: 'Firebase'
 		}
 	}
-
 });
 
-require(['utils', 'Firebase', 'Backbone', 'LoginModel', 'UserModel', 'Router', 'LoginView'],
-	function(utils, Firebase, Backbone, LoginModel, UserModel, Router, LoginView) {
+require(['utils',
+				 'Firebase',
+				 'syncOverride',
+				 'Backbone',
+				 'LoginModel',
+				 'UserModel',
+				 'SandboxModel',
+				 'SandboxCollection',
+				 'Router',
+				 'LoginView',
+				 'SandboxView'],
+	function(utils,
+					 Firebase,
+					 syncOverride,
+					 Backbone,
+					 LoginModel,
+					 UserModel,
+					 SandboxModel,
+					 SandboxCollection,
+					 Router,
+					 LoginView,
+					 SandboxView)
+	{	
 		utils.safeConsole();
+		syncOverride();
+
+		//TODO: Remove dependency on load order by using an event based data routing system
 		
 		//Router (First. The router can trigger events that are listened to by models and views)
 		var router = new Router({});
 		
 		//Models (Second. They listen for events from the Router)
-		var user = new UserModel({}, {router: router});
-		var login = new LoginModel({}, {router: router});
+		var user = new UserModel({});
+		var login = new LoginModel({});
 
 		//Collections (Third. They're made up of models)
 		
@@ -56,10 +82,21 @@ require(['utils', 'Firebase', 'Backbone', 'LoginModel', 'UserModel', 'Router', '
 		});
 
 		//Set up some listeners:
-		login.listenTo(router, 'auth', login.routeListener);
+		login.listenTo(router, 'receivedAuthData', login.authDataListener);
+		
+		var sandboxModel = new SandboxModel({});
+		var sandboxView = new SandboxView({
+			model: sandboxModel,
+			el: '#sandbox'
+		});
+
+		var sandboxCollection = new SandboxCollection({});
+
+		sandboxModel.listenTo(router, 'sandbox', sandboxModel.setData);;
 
 
 		//Start the app
 		Backbone.history.start({pushState: true});
-});
+	}
+);
 
