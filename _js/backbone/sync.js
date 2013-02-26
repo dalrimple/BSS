@@ -182,7 +182,7 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 			}
 
 		};
-
+		
 		_.extend(Backbone.Model.prototype, {
 			parse: function(resp, options) {
 				this.firebase = this.firebase || resp.ref();
@@ -193,11 +193,12 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 
 		_.extend(Backbone.Collection.prototype, {
 			parse: function(resp, options) {
-				//console.log('sync.Collection.parse()', resp.val());
+				//console.log('sync.Collection.parse()', new this.model());
 				this.firebase = this.firebase || resp.ref();
+				var collection = this;
 				var array = [];
 				resp.forEach(function(childSnapShot) {
-					array.push(childSnapShot);
+					array.push(new collection.model({firebase:childSnapShot.ref(), attributes:childSnapShot.val()}));
 				});
 				return array;
 			}
