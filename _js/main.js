@@ -12,9 +12,11 @@ requirejs.config({
 			//Firebase hosted SaaS backend
 			'Firebase': 'https://cdn.firebase.com/v0/firebase',
 
+			//Firebase extensions
+			'BackboneFirebase': 'backbone/Backbone.Firebase',
+			//'syncOverride': 'backbone/sync',
+
 			//Backbone modules
-			'syncOverride': 'backbone/sync',
-			'config': 'backbone/models/config',
 			'LoginModel': 'backbone/models/login',
 			'UserModel': 'backbone/models/user',
 			'SandboxModel': 'backbone/models/sandbox',
@@ -23,6 +25,7 @@ requirejs.config({
 			'LoginView': 'backbone/views/login',
 			'SandboxView': 'backbone/views/sandbox',
 			//Miscellaneous
+			'config': 'config',
 			'utils': 'utils'
 	},
 
@@ -40,8 +43,9 @@ requirejs.config({
 
 require(['utils',
 				 'Firebase',
-				 'syncOverride',
 				 'Backbone',
+				 'BackboneFirebase',
+				 //'syncOverride',
 				 'LoginModel',
 				 'UserModel',
 				 'SandboxModel',
@@ -51,8 +55,9 @@ require(['utils',
 				 'SandboxView'],
 	function(utils,
 					 Firebase,
-					 syncOverride,
 					 Backbone,
+					 BackboneFirebase,
+					 //syncOverride,
 					 LoginModel,
 					 UserModel,
 					 SandboxModel,
@@ -62,7 +67,7 @@ require(['utils',
 					 SandboxView)
 	{	
 		utils.safeConsole();
-		syncOverride();
+		//syncOverride();
 
 		//TODO: Remove dependency on load order by using an event based data routing system
 		
@@ -84,15 +89,17 @@ require(['utils',
 		//Set up some listeners:
 		login.listenTo(router, 'receivedAuthData', login.authDataListener);
 		
+		/*
 		var sandboxModel = new SandboxModel({});
 		var sandboxView = new SandboxView({
 			model: sandboxModel,
 			el: '#sandbox'
 		});
+		*/
 
-		var sandboxCollection = new SandboxCollection({});
+		var sandboxCollection = new SandboxCollection([], {});
 
-		sandboxModel.listenTo(router, 'sandbox', sandboxModel.setData);;
+		//sandboxModel.listenTo(router, 'sandbox', sandboxModel.setData);;
 
 
 		//Start the app

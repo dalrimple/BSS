@@ -1,16 +1,46 @@
 define(['config', 'Backbone'], function(config, Backbone) {
 	
 	var SandboxModel = Backbone.Model.extend({
-		
-		initialize: function() {
-			console.log('SandboxModel.initialize()', this.attributes);
-			this.on('all', this.showAttr);
+		urlRoot: config.firebaseRoot + '/sandbox/',
+		//id: '-InX4zQ6FWshbN38YxN8',
+
+		initialize: function(attributes, options) {
+			this.id = options.id; // Required as there is not an id value in the passed attributes 
+			//console.log('SandboxModel.initialize()', this.attributes, this.id);
+
+			//this.on('all', this.showAttr);
 			this.on('error', this.errorListener);
-			//this.fireBaseRef = this.fetch();
 			//this.on('change', this.changeListener);
-			this.on('change', this.changeListener);
 
 			//this.on('value child_added child_changed child_removed child_moved', this.firebaseListener);
+
+			/*
+			this.firebase = new Backbone.Firebase(this, {
+				initialize: function() {
+					console.log('SandboxModel.firebase.initialize()');
+				}
+			});
+			*/
+
+			//TODO: Add a way to pass in a Firebase reference rather than looking for the url
+			this.firebase = new Backbone.Firebase(this, {
+				initialize: function() {
+					//console.log('SandboxModel.firebase.initialize()');
+				}
+			});
+			/*
+			*/
+
+			/*
+			*/
+			var valueListener = function(snapShot) {
+				console.log('SandboxModel.on(value)', snapShot.val());
+			};
+			this.firebase.on('value', valueListener, this);
+			//this.firebase.on('value', listener, window);
+
+			//this.fetch();
+			this.on('sync', this.syncListener);
 		},
 
 		setData: function(data) {
@@ -56,8 +86,14 @@ define(['config', 'Backbone'], function(config, Backbone) {
 			console.log('SandboxModel.errorListener()', fireBaseRef);
 		},
 
+		syncListener: function() {
+			console.log('SandboxModel.syncListener()', this.attributes);
+			//console.log('SandboxModel.showAttr()', eventName);
+		},
+
 		showAttr: function(eventName) {
 			console.log('SandboxModel.showAttr()', eventName, this.attributes);
+			//console.log('SandboxModel.showAttr()', eventName);
 		}
 	
 	});
