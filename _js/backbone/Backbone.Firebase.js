@@ -89,7 +89,6 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 		});
 	}
 
-<<<<<<< HEAD
 	//Create 'limit', 'startAt' & 'endEnd' firebase queries and return a copy of the Backbone.Firebase instance with the query included. The 'on' function looks for the _query value to act on.
 	var queryMaker = function(term) {
 		//TODO: Fix this so that chaining works properly currently calling .startAt(...).limit(...) only applies the .Limit() function.
@@ -106,8 +105,6 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 		return _.defaults(r, this);
 	}
 
-=======
->>>>>>> de2e47036a272b3318b77b58e7818642b5d2b6c8
 	Backbone.Firebase = function(model, options) {
 		//Make sure there is a Backbone Model or Collection to work with
 		if (!model || !(model instanceof Backbone.Model || model instanceof Backbone.Collection)) throw (MSGS.noModel);
@@ -209,13 +206,6 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 	};
 
 	_.extend(Backbone.Firebase.prototype, Backbone.Events, {
-<<<<<<< HEAD
-=======
-		limit: function() {
-			//TODO: Implement a way to create a query and attach events to it.
-		},
->>>>>>> de2e47036a272b3318b77b58e7818642b5d2b6c8
-
 		on: function(name, callback, context) {
 			//Validate params for Firebase
 			if (_.indexOf(FB_EVENTS, name) === -1) return this;
@@ -227,15 +217,10 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 			Backbone.Events.on.apply(this, [name + ':' + eventId].concat(_.rest(arguments)));
 
 			//Route the Firebase.on events to the callbacks set on an instance of this
-<<<<<<< HEAD
 			var refQuery = this._ref
 			if (_.has(this, '_query')) refQuery = this._query;
 			//console.log('Backbone.Firebase.on()', this._query, this._ref);
 			var firebaseCallback = refQuery.on(name, function() {
-			//var firebaseCallback = this._ref.limit(2).on(name, function() {
-=======
-			var firebaseCallback = this._ref.on(name, function() {
->>>>>>> de2e47036a272b3318b77b58e7818642b5d2b6c8
 				Backbone.Events.trigger.apply(this, [name + ':' + eventId].concat(_.toArray(arguments)));
 			}, this);
 			
@@ -243,10 +228,7 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 			this._firebaseCallbacks.push({
 				name: name,
 				id: eventId,
-<<<<<<< HEAD
 				query: refQuery,
-=======
->>>>>>> de2e47036a272b3318b77b58e7818642b5d2b6c8
 				firebase: firebaseCallback,
 				callback: callback,
 				context: context,
@@ -255,8 +237,6 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 			return this;
 		},
 
-<<<<<<< HEAD
-=======
 		once: function(name, callback, context) {
 			//Basically using on and putting off in the callback but using the convenience of Firebase.once.
 			var eventId = _.uniqueId();
@@ -268,7 +248,6 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 			}, this);
 		},
 
->>>>>>> de2e47036a272b3318b77b58e7818642b5d2b6c8
 		off: function(name, callback, context) {
 			//Create an object to pass to _.where
 			var searchProps = {};
@@ -280,18 +259,13 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 			//Loop over the results of the search and remove event handlers from Firebase and this._events.
 			for(var i = 0, l = removals.length; i < l; i++) {
 				var ev = removals[i];
-<<<<<<< HEAD
 				ev.query.off(ev.name, ev.callback, this);
-=======
-				this._ref.off(ev.name, ev.callback, this);
->>>>>>> de2e47036a272b3318b77b58e7818642b5d2b6c8
 				Backbone.Events.off.apply(this, [ev.name + ':' + ev.id, ev.callback, ev.context]);
 			}
 
 			return this;
 		},
 
-<<<<<<< HEAD
 		once: function(name, callback, context) {
 			//Basically using on and putting off in the callback but using the convenience of Firebase.once.
 			var eventId = _.uniqueId();
@@ -304,18 +278,15 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 		},
 
 		limit: function(count) {
-			var r = queryMaker.apply(this, ['limit'].concat(_.toArray(arguments)));
-			return r;
+			return queryMaker.apply(this, ['limit', count]);
 		},
-		startAt: function() {
-			return queryMaker.apply(this, ['startAt'].concat(_.toArray(arguments)));
+		startAt: function(priority, id) {
+			return queryMaker.apply(this, ['startAt', priority, id]);
 		},
-		endAt: function() {
-			return queryMaker.apply(this, ['endAt'].concat(_.toArray(arguments)));
+		endAt: function(priority, id) {
+			return queryMaker.apply(this, ['endAt', priority, id]);
 		},
 
-=======
->>>>>>> de2e47036a272b3318b77b58e7818642b5d2b6c8
 		listenTo: function(other, event, callback) {
 			//TODO: Implement this so that a Firebase function (probably save) can be triggered by an event
 			Backbone.Events.listenTo.apply(this, arguments);

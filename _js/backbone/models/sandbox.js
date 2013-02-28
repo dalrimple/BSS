@@ -6,11 +6,7 @@ define(['config', 'Backbone'], function(config, Backbone) {
 
 		initialize: function(attributes, options) {
 			this.id = options.id; // Required as there is not an id value in the passed attributes 
-<<<<<<< HEAD
 			//console.log('SandboxModel.initialize()', this.attributes, this.id);
-=======
-			console.log('SandboxModel.initialize()', this.attributes, this.id);
->>>>>>> de2e47036a272b3318b77b58e7818642b5d2b6c8
 
 			//this.on('all', this.showAttr);
 			this.on('error', this.errorListener);
@@ -29,11 +25,7 @@ define(['config', 'Backbone'], function(config, Backbone) {
 			//TODO: Add a way to pass in a Firebase reference rather than looking for the url
 			this.firebase = new Backbone.Firebase(this, {
 				initialize: function() {
-<<<<<<< HEAD
 					//console.log('SandboxModel.firebase.initialize()');
-=======
-					console.log('SandboxModel.firebase.initialize()');
->>>>>>> de2e47036a272b3318b77b58e7818642b5d2b6c8
 				}
 			});
 			/*
@@ -42,15 +34,9 @@ define(['config', 'Backbone'], function(config, Backbone) {
 			/*
 			*/
 			var valueListener = function(snapShot) {
-<<<<<<< HEAD
 				console.log('SandboxModel.on(value)', snapShot.val());
 			};
 			this.firebase.on('value', valueListener, this);
-=======
-				//console.log('SandboxModel.on(value)', snapShot.val());
-			};
-			this.firebase.once('value', valueListener, this);
->>>>>>> de2e47036a272b3318b77b58e7818642b5d2b6c8
 			//this.firebase.on('value', listener, window);
 
 			//this.fetch();
