@@ -1,7 +1,7 @@
 define(['config', 'Backbone'], function(config, Backbone) {
 	
 	var SandboxModel = Backbone.Model.extend({
-		urlRoot: config.firebaseRoot + '/sandbox/',
+		//urlRoot: config.firebaseRoot + '/sandbox/',
 		//id: '-InX4zQ6FWshbN38YxN8',
 
 		initialize: function(attributes, options) {
@@ -39,7 +39,7 @@ define(['config', 'Backbone'], function(config, Backbone) {
 			this.firebase.on('value', valueListener, this);
 			//this.firebase.on('value', listener, window);
 
-			//this.fetch();
+			this.fetch();
 			this.on('sync', this.syncListener);
 		},
 

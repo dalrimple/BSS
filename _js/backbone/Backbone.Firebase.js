@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore', 'Firebase'], function(Backbone, _, Firebase) {
+define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 	/*
 	 * Backbone extension to integrate Firebase as the persistance layer
 	 * The idea is to create instances of Backbone.Firebase within a model
@@ -8,7 +8,7 @@ define(['Backbone', 'underscore', 'Firebase'], function(Backbone, _, Firebase) {
 
 	var MSGS = {
 		noModel: 'A Model or Collection must be passed as the first parameter.',
-		noUrl: 'The Model or Collection has no url property'
+		noUrl: 'The Model or Collection has no url property',
 	};
 	var FB_EVENTS = ['value', 'child_added', 'child_changed', 'child_removed', 'child_moved'];
 
@@ -91,18 +91,17 @@ define(['Backbone', 'underscore', 'Firebase'], function(Backbone, _, Firebase) {
 
 	//Create 'limit', 'startAt' & 'endEnd' firebase queries and return a copy of the Backbone.Firebase instance with the query included. The 'on' function looks for the _query value to act on.
 	var queryMaker = function(term) {
-		//TODO: Fix this so that chaining works properly currently calling .startAt(...).limit(...) only applies the .Limit() function.
 		var r, q;
-        if (_.has(this, '_query')) {
-			console.log('Backbone.Firebase.queryMaker()', true);
+    if (_.has(this, '_query')) {
+			//console.log('Backbone.Firebase.queryMaker()', true);
 			r = this;
 			q = this._query;
 		} else {
-			console.log('Backbone.Firebase.queryMaker()', false);
+			//console.log('Backbone.Firebase.queryMaker()', false);
 			r = {};
 			q = this._ref;
 		}
-		r._query = q[term].apply(this._ref, _.rest(arguments));
+		r._query = q[term].apply(q, _.rest(arguments));
 		return _.defaults(r, this);
 	};
 
@@ -211,6 +210,10 @@ define(['Backbone', 'underscore', 'Firebase'], function(Backbone, _, Firebase) {
 			//Validate params for Firebase
 			if (_.indexOf(FB_EVENTS, name) === -1) return this;
 			if (!_.isFunction(callback)) return this;
+			if (!context) {
+				arguments = _.toArray(arguments);
+				context = arguments[2] = this.model;
+			}
 			
 			//Trigger the default Backbone.Events.on behavior
 			//A unique id is required to prefent Firebase triggering every <name> callback for every <name> event 
@@ -220,33 +223,54 @@ define(['Backbone', 'underscore', 'Firebase'], function(Backbone, _, Firebase) {
 			//Route the Firebase.on events to the callbacks set on an instance of this
 			var refQuery = this._ref;
 			if (_.has(this, '_query')) refQuery = this._query;
-			//console.log('Backbone.Firebase.on()', this._query, this._ref);
-			var firebaseCallback = refQuery.on(name, function() {
+			
+			// Setup the Firebase on() function and call it in the context of this Backbone.Firebase instance
+			var firebaseCallback = function() {
+				//console.log('Backbone.Firebase.on.firebaseCallback()', this);
 				Backbone.Events.trigger.apply(this, [name + ':' + eventId].concat(_.toArray(arguments)));
-			}, this);
+			};
+			var cancelCallback = function() {
+			}
+			refQuery.on(name, firebaseCallback, cancelCallback, this);
 			
 			//Track the callbacks associated to the Firebase ref.
 			this._firebaseCallbacks.push({
 				name: name,
 				id: eventId,
 				query: refQuery,
-				firebase: firebaseCallback,
+				firebaseCallback: firebaseCallback,
+				firebaseContext: this,
 				callback: callback,
 				context: context,
 			});
-
 			return this;
 		},
 
-        once: function(name, callback, context) {
+    once: function(name, callback, context) {
+			//Validate params for Firebase
+			if (_.indexOf(FB_EVENTS, name) === -1) return this;
+			if (!_.isFunction(callback)) return this;
+			if (!context) {
+				arguments = _.toArray(arguments);
+				context = arguments[2] = this.model;
+			}
+
 			//Basically using on and putting off in the callback but using the convenience of Firebase.once.
 			var eventId = _.uniqueId();
 			Backbone.Events.on.apply(this, [name + ':' + eventId].concat(_.rest(arguments)));
 			var onceArguments = arguments;
-			this._ref.once(name, function(snapshot) {
+			var refQuery = this._ref;
+			if (_.has(this, '_query')) refQuery = this._query;
+
+			// Setup the Firebase on() function and call it in the context of this Backbone.Firebase instance
+			var firebaseCallback = function(snapshot) {
 				Backbone.Events.trigger.apply(this, [name + ':' + eventId].concat(_.toArray(arguments)));
 				Backbone.Events.off.apply(this, [name + ':' + eventId].concat(_.rest(onceArguments)));
-			}, this);
+			};
+			var cancelCallback = function() {
+				Backbone.Events.off.apply(this, [name + ':' + eventId].concat(_.rest(onceArguments)));
+			};
+			refQuery.once(name, firebaseCallback, cancelCallback, this);
 		},
 
 		off: function(name, callback, context) {
@@ -257,10 +281,12 @@ define(['Backbone', 'underscore', 'Firebase'], function(Backbone, _, Firebase) {
 			!context || (searchProps.context = context);
 			var removals = _.where(this._firebaseCallbacks, searchProps);
 
+			console.log('Backbone.Firebase.off()', this, searchProps, removals);
+
 			//Loop over the results of the search and remove event handlers from Firebase and this._events.
 			for(var i = 0, l = removals.length; i < l; i++) {
 				var ev = removals[i];
-				ev.query.off(ev.name, ev.callback, this);
+				ev.query.off(ev.name, ev.firebaseCallback, ev.firebaseContext);
 				Backbone.Events.off.apply(this, [ev.name + ':' + ev.id, ev.callback, ev.context]);
 			}
 

@@ -13,9 +13,10 @@ define(['config', 'Backbone', 'SandboxModel'], function(config, Backbone, Sandbo
 			});
 
 			//this.fetch({success: this.fetchSuccess, error: this.fetchError});
-			this.firebase.endAt(null, '-InX53JG7Jwwc5qvMhKU').limit(1).on('child_added', this.child_addedListener, this);
-			//this.firebase.limit(2).on('child_added', this.child_addedListener, this);
-			//this.firebase.on('child_added', this.child_addedListener, this);
+			this.firebase.limit(1).endAt(null, '-InX5HChJ3o5RmnRidK6').on('child_added', this.child_addedListener);
+			//this.firebase.limit(2).on('child_added', this.child_addedListener);
+			//this.firebase.on('child_added', this.child_addedListener);
+			//this.firebase.off('child_added', this.child_addedListener);
 		},
 
 		fetchSuccess: function(collection, response, options) {
@@ -29,8 +30,8 @@ define(['config', 'Backbone', 'SandboxModel'], function(config, Backbone, Sandbo
 
 		child_addedListener: function(childSnapshot, prevChildName) {
 			console.log('SandboxCollection.child_addedListener()', childSnapshot.ref().name(), prevChildName);
-			//this.add(childSnapshot.val(), {id: childSnapshot.name(), firebaseRef: childSnapshot.ref()});
-			this.add(new this.model(childSnapshot.val(), {id: childSnapshot.ref().name()}));
+			this.add(childSnapshot.val(), {id: childSnapshot.name()});
+			//this.add(new this.model(childSnapshot.val(), {id: childSnapshot.ref().name()}));
 		}
 
 	});
