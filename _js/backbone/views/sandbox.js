@@ -5,11 +5,12 @@ define(['Backbone'], function(Backbone) {
 			'click [data-fn=save]': 'saveData',
 			'click [data-fn=update]': 'updateData',
 			'click [data-fn=push]': 'pushData',
-			'click [data-fn=delete]': 'removeData'
+			'click [data-fn=delete]': 'removeData',
+			'click [data-fn=priority]': 'setPriority'
 		},
 
 		initialize: function() {
-			//console.log('SandboxView.initialize()');
+			console.log('SandboxView.initialize()');
 		},
 
 		fetchData: function() {
@@ -26,6 +27,10 @@ define(['Backbone'], function(Backbone) {
 		},
 		removeData: function() {
 			this.model.removeData();
+		},
+		setPriority: function() {
+			if (this.$priorityInput === void 0) this.$priorityInput = this.$el.find('[data-value=priority]');
+			this.model.setPriority(this.$priorityInput.val());
 		}
 
 	});

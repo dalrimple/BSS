@@ -3,7 +3,7 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 	 * Backbone extension to integrate Firebase as the persistance layer
 	 * The idea is to create instances of Backbone.Firebase within a model
 	 * or collection that allows that model to save data to Firebase and
-	 * listen to events on Firebase endpoints to be updated with new data.
+	 * listen to events on Firebase endpoints and be updated with new data.
 	 */
 
 	var MSGS = {
@@ -37,7 +37,7 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 		});			
 	};
 	var deepUpdate = function(ref, model, options) {
-		//console.log('sync.deepUpdate()', model, options);
+		//console.log('Backbone.Firebase.deepUpdate()', model, options);
 		//Any key not in model.attributes will not be overwritten, regardless of depth in Firebase
 		var totalUpdates = 0,
 				updatesSuccessfull = true,
@@ -55,13 +55,13 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 			}
 			if (hasProperties) {
 				totalUpdates++;
-				//console.log('sync.recursiveUpdater()', ref, updateObj);
+				//console.log('Backbone.Firebase.recursiveUpdater()', ref, updateObj);
 				ref.update(updateObj, recursionCompleter);
 			}
 		};
 		//Call success() or error() only when all recursive updates are complete
 		var recursionCompleter = function(error) {
-			//console.log('sync.recursionCompleter()', totalUpdates, error);
+			//console.log('Backbone.Firebase.recursionCompleter()', totalUpdates, error);
 			latestError = error ? error : false; //Ensure an error object is available to pass if one exists
 			updatesSuccessfull = updatesSuccessfull && !error;
 			if (--totalUpdates === 0) {
@@ -71,19 +71,19 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 		recursiveUpdater(ref, model.attributes);
 	};
 	var update = function(ref, model, options) {
-		//console.log('sync.update()');
+		//console.log('Backbone.Firebase.update()');
 		ref.update(model.attributes, function(error) {
 			error ? options.error(error) : options.success();
 		});
 	};
 	var destroy = function(ref, model, options) {
-		//console.log('sync.destory()');
+		//console.log('Backbone.Firebase.destory()');
 		ref.remove(function(error) {
 			error ? options.error(error) : options.success();
 		});
 	};
 	var read = function(ref, model, options) {
-		//console.log('sync.read()', ref, model, options);
+		//console.log('Backbone.Firebase.read()', ref, model, options);
 		ref.once('value', function(snapshot) {
 			options.success(snapshot);
 		});
@@ -118,8 +118,10 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 
 		//Add a parsing function to the model designed for handling Firebase responses
 		_.extend(this.model, {parse: function(resp, options) {
-				//console.log('sync.model.parse()', this);
+				//console.log('Backbone.Firebase.model.parse()', resp, this);
+				//Allow the model author to overide this with their own parse function
 				if (_.isFunction(options.parse)) return options.parse.apply(this, [resp, options]);
+				if (!resp) return;
 				if (this instanceof Backbone.Model) {
 					//console.log('sync.model.parse():model', this);
 					return resp.val();
@@ -128,7 +130,8 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 					var that = this;
 					resp.forEach(function(childSnapShot) {
 						//console.log('sync.model.parse():collection', that);
-						var newModel = new that.model(childSnapShot.val(), {id: childSnapShot.name()});
+						var newModel = new that.model(childSnapShot.val());
+						newModel.id = childSnapShot.name();
 						newModel.firebase = new Backbone.Firebase(newModel);
 						array.push(newModel);
 					});
@@ -144,17 +147,16 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 		
 			var successFn = options.success;
 			options.success = function(resp) {
+				//console.log('sync success', resp, model);
 				if (successFn) successFn(model, resp, options);
 				model.trigger('sync', model, resp, options);
-				//console.log('sync success', resp, model);
 			};
 
 			var errorFn = options.error;
 			options.error = function(ref) {
-				//options.firebaseRef = ref;
+				//console.log('sync error', ref, model);
 				if (errorFn) errorFn(model, ref, options);
 				model.trigger('error', model, ref, options);
-				console.log('sync error', ref, model);
 			};
 
 			
@@ -168,11 +170,11 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 						createByPush(ref, model, options);
 					} else {
 						//If not being pushed, just set the values.
-						//if (_.has(options, 'priority')) {
-						//	createByPrioritySet();
-						//} else {
+						if (_.has(options, 'priority')) {
+							createByPrioritySet();
+						} else {
 							createBySet(ref, model, options);
-						//}
+						}
 					}
 					break;
 
@@ -229,9 +231,7 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 				//console.log('Backbone.Firebase.on.firebaseCallback()', this);
 				Backbone.Events.trigger.apply(this, [name + ':' + eventId].concat(_.toArray(arguments)));
 			};
-			var cancelCallback = function() {
-			}
-			refQuery.on(name, firebaseCallback, cancelCallback, this);
+			refQuery.on(name, firebaseCallback, firebaseCallback, this);
 			
 			//Track the callbacks associated to the Firebase ref.
 			this._firebaseCallbacks.push({
@@ -267,10 +267,7 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 				Backbone.Events.trigger.apply(this, [name + ':' + eventId].concat(_.toArray(arguments)));
 				Backbone.Events.off.apply(this, [name + ':' + eventId].concat(_.rest(onceArguments)));
 			};
-			var cancelCallback = function() {
-				Backbone.Events.off.apply(this, [name + ':' + eventId].concat(_.rest(onceArguments)));
-			};
-			refQuery.once(name, firebaseCallback, cancelCallback, this);
+			refQuery.once(name, firebaseCallback, firebaseCallback, this);
 		},
 
 		off: function(name, callback, context) {
@@ -303,6 +300,14 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 			return queryMaker.apply(this, ['endAt', priority, id]);
 		},
 
+		setPriority: function(priority) {
+			this._ref.setPriority.apply(this._ref, arguments);
+		},
+
+		onDisconnect: function() {
+			//TODO: Implement this native Firebase function.
+			return this;
+		},
 		listenTo: function(other, event, callback) {
 			//TODO: Implement this so that a Firebase function (probably save) can be triggered by an event
 			Backbone.Events.listenTo.apply(this, arguments);

@@ -8,26 +8,12 @@ define(['utils', 'Backbone'], function(utils, Backbone) {
 
 		initialize: function(options) {
 			//console.log('Router.initialize()');
-
-			//Testing
-			var that = this;
-			$('#profile').click(function(e) {
-				e.preventDefault();
-				that.getProfile();
-			});
-
 		},
 		
 		auth: function() {
-			console.log('Router.auth():', Backbone.history.location.hash);
+			//console.log('Router.auth():', Backbone.history.location.hash);
 			var authInfo = utils.deparam(Backbone.history.location.hash);
 			this.trigger('receivedAuthData', authInfo);
-
-			//console.log('Router.auth()', authInfo);
-
-			return; //TESTING
-			window.me = new Firebase('https://zabinskas-bss.firebaseio.com/users/' + authInfo.account);
-			window.me.once('value', function(o) {console.log(o.val())});
 		},
 
 		//Testing

@@ -5,6 +5,7 @@ define(['config', 'Backbone'], function(config, Backbone) {
 		//id: '-InX4zQ6FWshbN38YxN8',
 
 		initialize: function(attributes, options) {
+			if (this.collection === void 0) this.urlRoot = config.firebaseRoot + '/sandbox/';
 			this.id = options.id; // Required as there is not an id value in the passed attributes 
 			//console.log('SandboxModel.initialize()', this.attributes, this.id);
 
@@ -39,14 +40,14 @@ define(['config', 'Backbone'], function(config, Backbone) {
 			this.firebase.on('value', valueListener, this);
 			//this.firebase.on('value', listener, window);
 
-			this.fetch();
+			//this.fetch();
 			this.on('sync', this.syncListener);
 		},
 
 		setData: function(data) {
 			//var data = {bbb: {b2: 'b', c2: 'c', d2: {e2: 'e', f2:'f'}}, bbb2:'bbb2'};
 			this.routerData = data;
-			//console.log('SandboxModel.saveData()', this.attributes);
+			console.log('SandboxModel.setData()', this.routerData);
 		},
 
 		firebaseListener: function() {
@@ -56,7 +57,7 @@ define(['config', 'Backbone'], function(config, Backbone) {
 		saveData: function() {
 			this.set(this.routerData);
 			var options = {};
-			if (this.isNew()) options.url = config.firebaseRoot + '/sandbox/';
+			//if (this.isNew()) options.url = config.firebaseRoot + '/sandbox/';
 			this.save(this.attributes, options);
 		},
 		fetchData: function() {
@@ -76,6 +77,11 @@ define(['config', 'Backbone'], function(config, Backbone) {
 		},
 		removeData: function() {
 			this.destroy(this.attributes);
+		},
+		setPriority: function(value) {
+			this.firebase.setPriority(Number(value), function() {
+				console.log('SandboxModel.setPriority.callback()', arguments);
+			});
 		},
 
 		changeListener: function(model, syncOptions) {

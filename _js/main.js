@@ -7,7 +7,8 @@ requirejs.config({
 			//Major libraries
 			'jQuery': '//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min',
 			'Underscore': '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.3/underscore-min',
-			'Backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.10/backbone-min',
+			//'Backbone': '//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.10/backbone-min',
+			'Backbone': 'libs/backbone',
 
 			//Firebase hosted SaaS backend
 			'Firebase': 'https://cdn.firebase.com/v0/firebase',
@@ -20,10 +21,11 @@ requirejs.config({
 			'LoginModel': 'backbone/models/login',
 			'UserModel': 'backbone/models/user',
 			'SandboxModel': 'backbone/models/sandbox',
-			'SandboxCollection': 'backbone/collections/sandbox',
+			'SandboxCollection': 'backbone/collections/sandboxes',
 			'Router': 'backbone/routers/router',
 			'LoginView': 'backbone/views/login',
 			'SandboxView': 'backbone/views/sandbox',
+			'SandboxesView': 'backbone/views/sandboxes',
 			//Miscellaneous
 			'config': 'config',
 			'utils': 'utils'
@@ -48,11 +50,8 @@ require(['utils',
 				 //'syncOverride',
 				 'LoginModel',
 				 'UserModel',
-				 'SandboxModel',
-				 'SandboxCollection',
 				 'Router',
-				 'LoginView',
-				 'SandboxView'],
+				 'LoginView'],
 	function(utils,
 					 Firebase,
 					 Backbone,
@@ -60,11 +59,8 @@ require(['utils',
 					 //syncOverride,
 					 LoginModel,
 					 UserModel,
-					 SandboxModel,
-					 SandboxCollection,
 					 Router,
-					 LoginView,
-					 SandboxView)
+					 LoginView)
 	{	
 		utils.safeConsole();
 		//syncOverride();
@@ -82,25 +78,12 @@ require(['utils',
 		
 		//Views (Last. They listen to model & router events. They change models and trigger route navigation)
 		var loginView = new LoginView({
-			model: login,
-			router: router
+			model: login
 		});
 
 		//Set up some listeners:
 		login.listenTo(router, 'receivedAuthData', login.authDataListener);
-		
-		/*
-		var sandboxModel = new SandboxModel({});
-		var sandboxView = new SandboxView({
-			model: sandboxModel,
-			el: '#sandbox'
-		});
-		*/
-
-		var sandboxCollection = new SandboxCollection([], {});
-
-		//sandboxModel.listenTo(router, 'sandbox', sandboxModel.setData);;
-
+		user.listenTo(login, 'authenticated', login.authDataListener);
 
 		//Start the app
 		Backbone.history.start({pushState: true});

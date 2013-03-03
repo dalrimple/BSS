@@ -20,7 +20,7 @@ define({
 	}, 
 
 	/*
-	 * Simplified version of printf from other languanges. Converts all values to strings
+	 * Simplified version of printf. Converts all values to strings
 	 */
 	printf: function(str) {
 		for (var i = 1, l = arguments.length; i < l; i++) {
@@ -33,6 +33,7 @@ define({
 	 * Turn a string of variable value pairs into an object.
 	 * ie: #a=1&b=2&b=3&c=4=5 -> {a:'1', b:['2', '3'], c:5}
 	 * It also removes a preceding '#' or '?' if one exists
+	 * Complex strings like #a[b]=c are not supported.
 	 */
 	deparam: function(str) {
 		var returnObject = {};
@@ -44,7 +45,7 @@ define({
 			for (var i in str) {
 				var keyvar = str[i].split('=');
 				var key = keyvar[0];
-				if (returnObject[key]) {
+				if (returnObject[key] !== void 0) {
 					if (typeof(returnObject[key]) === 'string') {
 						var array = [];
 						array.push(returnObject[key]);
@@ -57,5 +58,34 @@ define({
 			}
 		}
 		return returnObject;
+	},
+
+	/* 
+	 * Turn an object into a string of variable value pairs.
+	 * ie: {a:'1', b:['2', '3'], c:5} -> a=1&b=2&b=3&c=4=5
+	 * It also takes an optional string argument and appends to it.
+	 * Complexe objects like {a: {b:'c'}} are not supported
+	 */
+	enparam: function(obj, str) {
+		str || (str = '');
+		function nextDelimiter() {
+			var lastChar = str.substr(-1);
+			if ('#?&'.indexOf(lastChar) > -1) return '';
+			else return '&';
+		}
+		for (var i in obj) {
+			if (str.length > 0) str += nextDelimiter();
+			var key = i,
+					val = obj[i];
+			if (typeof(val) === 'string') {
+				str += encodeURIComponent(key) + '=' + encodeURIComponent(val);
+			} else if (val.length !== void 0) {
+				for (var j = 0, k = val.length; j < k; j++) {
+					if (str.length > 0) str += nextDelimiter();
+					str += encodeURIComponent(key) + '=' + encodeURIComponent(val[j]);
+				}
+			}
+		}
+		return str;
 	}
 });
