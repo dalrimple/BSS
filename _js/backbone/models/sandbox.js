@@ -1,11 +1,11 @@
 define(['config', 'Backbone'], function(config, Backbone) {
 	
 	var SandboxModel = Backbone.Model.extend({
-		//urlRoot: config.firebaseRoot + '/sandbox/',
+		//urlRoot: config.firebaseRoot + 'sandbox/',
 		//id: '-InX4zQ6FWshbN38YxN8',
 
 		initialize: function(attributes, options) {
-			if (this.collection === void 0) this.urlRoot = config.firebaseRoot + '/sandbox/';
+			if (this.collection === void 0) this.urlRoot = config.firebaseRoot + 'sandbox/';
 			this.id = options.id; // Required as there is not an id value in the passed attributes 
 			//console.log('SandboxModel.initialize()', this.attributes, this.id);
 
@@ -57,12 +57,12 @@ define(['config', 'Backbone'], function(config, Backbone) {
 		saveData: function() {
 			this.set(this.routerData);
 			var options = {};
-			//if (this.isNew()) options.url = config.firebaseRoot + '/sandbox/';
+			//if (this.isNew()) options.url = config.firebaseRoot + 'sandbox/';
 			this.save(this.attributes, options);
 		},
 		fetchData: function() {
 			console.log('SandboxModel.fetchData()', this.attributes);
-			this.fireBaseRef = this.fetch({url: config.firebaseRoot + '/sandbox/'});
+			this.fireBaseRef = this.fetch({url: config.firebaseRoot + 'sandbox/'});
 		},
 		updateData: function() {
 			this.set(this.routerData);
@@ -72,7 +72,7 @@ define(['config', 'Backbone'], function(config, Backbone) {
 		pushData: function() {
 			this.set(this.routerData);
 			var options = {push:true};
-			if (this.isNew()) options.url = config.firebaseRoot + '/sandbox/';
+			if (this.isNew()) options.url = config.firebaseRoot + 'sandbox/';
 			this.save(this.attributes, options);
 		},
 		removeData: function() {

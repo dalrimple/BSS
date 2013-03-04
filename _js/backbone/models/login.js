@@ -29,7 +29,7 @@ define(['config', 'utils', 'Backbone', 'Firebase'], function(config, utils, Back
 
 		//Once the login attributes are updated from 'this.set' authenticate the Firebase reference 
 		tokenChangeListener: function() {
-			console.log('LoginModel.tokenChangeListener()', this, !!this.get('firebase'));
+			//console.log('LoginModel.tokenChangeListener()', this, !!this.get('firebase'));
 			if (!this.get('firebase')) {
 				this.firebaseRef.unauth();
 				this.trigger('loggedOut', this);
@@ -57,6 +57,7 @@ define(['config', 'utils', 'Backbone', 'Firebase'], function(config, utils, Back
 		logout: function() {
 			console.log('LoginModel.logout()');
 			this.set(this.defaults);
+			this.trigger('loggedOut', this, authPayload);
 		}
 
 	});

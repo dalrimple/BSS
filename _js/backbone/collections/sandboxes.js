@@ -1,7 +1,7 @@
 define(['config', 'Backbone', 'SandboxModel'], function(config, Backbone, SandboxModel) {
 	var SandboxCollection = Backbone.Collection.extend({
 		model: SandboxModel,
-		url: config.firebaseRoot + '/sandbox/',
+		url: config.firebaseRoot + 'sandbox/',
 
 		initialize: function() {
 			//console.log('SandboxCollection.initialize()', this);

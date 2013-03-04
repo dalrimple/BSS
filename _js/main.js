@@ -82,8 +82,8 @@ require(['utils',
 		});
 
 		//Set up some listeners:
-		login.listenTo(router, 'receivedAuthData', login.authDataListener);
-		user.listenTo(login, 'authenticated', login.authDataListener);
+		login.listenTo(router, 'authData', login.authDataListener);
+		user.listenTo(login, 'loggedIn', user.loggedInListener);
 
 		//Start the app
 		Backbone.history.start({pushState: true});

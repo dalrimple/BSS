@@ -17,10 +17,10 @@
 		
 		<div id='login'>
 			<div data-in>
-				<a href='https://api.singly.com/oauth/authenticate?client_id=65ab7caa42476b137e5703bf1ad2e876&redirect_uri=https%3A%2F%2Fbss.dev%2Fauth&service=twitter&response_type=token'><img src='/_img/login/twitter.png' alt='Twitter Login' /></a>
-				<a href='https://api.singly.com/oauth/authenticate?client_id=65ab7caa42476b137e5703bf1ad2e876&redirect_uri=https%3A%2F%2Fbss.dev%2Fauth&service=gmail&response_type=token'><img src='/_img/login/gmail.png' alt='Gmail Login' /></a>
+				<a data-service='twitter' href='#'><img src='/_img/login/twitter.png' alt='Twitter Login' /></a>
+				<a data-service='gmail' href='#'><img src='/_img/login/gmail.png' alt='Gmail Login' /></a>
 			</div>
-			<div data-out>
+			<div data-out style='display:none;'>
 				<input type='button' value='logout' />
 			</div>
 			<span class='errors'>This is where errors go</span>

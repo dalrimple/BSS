@@ -13,7 +13,7 @@ define(['utils', 'Backbone'], function(utils, Backbone) {
 		auth: function() {
 			//console.log('Router.auth():', Backbone.history.location.hash);
 			var authInfo = utils.deparam(Backbone.history.location.hash);
-			this.trigger('receivedAuthData', authInfo);
+			this.trigger('authData', authInfo);
 		},
 
 		//Testing

@@ -79,6 +79,8 @@ define({
 					val = obj[i];
 			if (typeof(val) === 'string') {
 				str += encodeURIComponent(key) + '=' + encodeURIComponent(val);
+			} else if (val === void 0) {
+				str += encodeURIComponent(key);
 			} else if (val.length !== void 0) {
 				for (var j = 0, k = val.length; j < k; j++) {
 					if (str.length > 0) str += nextDelimiter();
