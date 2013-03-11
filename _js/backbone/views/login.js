@@ -2,7 +2,7 @@ define(['utils', 'Backbone', 'LoginModel'], function(utils, Backbone, LoginModel
 	var LoginView = Backbone.View.extend({
 		el: '#login',
 		events: {
-			'click [data-out] input': 'logout'
+			'click input[name=logout]': 'logout'
 		},
 
 		singly: {
@@ -17,8 +17,10 @@ define(['utils', 'Backbone', 'LoginModel'], function(utils, Backbone, LoginModel
 
 		initialize: function() {
 			//console.log('LoginView.initialize()', this);
-			this.$outUI = this.$el.find('[data-out]');
-			this.$inUI = this.$el.find('[data-in]');
+			this.$loggedin = this.$el.find('[data-status=loggedin]');
+			this.$loggingin = this.$el.find('[data-status=loggingin]');
+			this.$loggedout = this.$el.find('[data-status=loggedout]');
+			this.$messageDisplay = this.$el.find('[data-display=msgs]');
 
 			this.render();
 
@@ -31,7 +33,7 @@ define(['utils', 'Backbone', 'LoginModel'], function(utils, Backbone, LoginModel
 			//console.log('LoginView.render()', this.model);
 			
 			var that = this;
-			this.$inUI.find('[data-service]').each(function(e) {
+			this.$loggedout.find('[data-service]').each(function(e) {
 				$(this).click(function(e) {
 					e.preventDefault();
 					console.log($(e.target));
@@ -49,24 +51,34 @@ define(['utils', 'Backbone', 'LoginModel'], function(utils, Backbone, LoginModel
 			params.redirect_uri = window.location.protocol + '//' + window.location.hostname + '/auth';
 			var singlyEndpoint = utils.enparam(params, this.singly.uri);
 			window.location = singlyEndpoint;
+			this.$loggedout.hide();
+			this.$loggingin.show();
+			this.$loggedin.hide();
 		},
 		logout: function() {
 			console.log('LoginView.logout()');
 			this.model.logout();
 		},
+		displayMessage: function(msg) {
+			this.$messageDisplay.show().html(msg);
+			var that = this;
+			setTimeout(function() {that.$messageDisplay.fadeOut(4000);}, 4000);
+		},
 
 		//Event Listeners
 		invalidListener: function(model, error) {
-			console.log('LoginView.invalidListener()', error);
-			this.$el.find('.errors').html(error);
+			//console.log('LoginView.invalidListener()', error);
+			this.displayMessage(error);
 		},
 		loggedInListener: function(model, authPayload) {
-			this.$outUI.show();
-			this.$inUI.hide();
+			this.$loggedout.hide();
+			this.$loggingin.hide();
+			this.$loggedin.show();
 		},
 		loggedOutListener: function(model, authPayload) {
-			this.$outUI.hide();
-			this.$inUI.show();
+			this.$loggedout.show();
+			this.$loggingin.hide();
+			this.$loggedin.hide();
 		}
 
 	});

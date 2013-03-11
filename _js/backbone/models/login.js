@@ -22,7 +22,7 @@ define(['config', 'utils', 'Backbone', 'Firebase'], function(config, utils, Back
 			//console.log('LoginModel.validate()', attributes, options);
 			for (var i in this.defaults) {
 				if (attributes[i] === this.defaults[i]) {
-					return utils.printf(config.errorMsgs.invalidAuthPayload, i);
+					return utils.printf(config.msgs.invalidAuthPayload, i);
 				}
 			}
 		},
@@ -44,7 +44,7 @@ define(['config', 'utils', 'Backbone', 'Firebase'], function(config, utils, Back
 			return function(error, authPayload) {
 				//console.log('LoginModel.authenticateComplete()', error, authPayload);
 				if (error) {
-					that.trigger('invalid', that, utils.printf(config.errorMsgs.invalidLogin, error.code));
+					that.trigger('invalid', that, utils.printf(config.msgs.invalidLogin, error.code));
 				} else {
 					that.trigger('loggedIn', that, authPayload);
 				}
@@ -57,7 +57,7 @@ define(['config', 'utils', 'Backbone', 'Firebase'], function(config, utils, Back
 		logout: function() {
 			console.log('LoginModel.logout()');
 			this.set(this.defaults);
-			this.trigger('loggedOut', this, authPayload);
+			this.trigger('loggedOut', this);
 		}
 
 	});

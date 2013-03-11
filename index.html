@@ -16,22 +16,38 @@
 		<h1>BSS</h1>
 		
 		<div id='login'>
-			<div data-in>
+			<div data-status='loggedout'>
 				<a data-service='twitter' href='#'><img src='/_img/login/twitter.png' alt='Twitter Login' /></a>
+				<a data-service='facebook' href='#'><img src='/_img/login/facebook.png' alt='Twitter Login' /></a>
 				<a data-service='gmail' href='#'><img src='/_img/login/gmail.png' alt='Gmail Login' /></a>
 			</div>
-			<div data-out style='display:none;'>
-				<input type='button' value='logout' />
+
+			<div data-status='loggingin' style='display:none'>
+				<p>Logging In</p>
 			</div>
-			<span class='errors'>This is where errors go</span>
+
+			<div data-status='loggedin' style='display:none;'>
+
+				<div id='userdetails'>
+					<span data-display='username'></span>
+					<div data-display='edit' style='display:none;'>
+						<input type='text' name='username'/>
+						<input type='button' name='save' value='Save' />
+						<input type='button' name='cancel' value='Cancel' />
+					</div>
+					<input type='button' name='edit' value='Edit' />
+				</div>
+				
+				<input type='button' name='logout' value='Logout' />
+			</div>
+
+			<span data-display='msgs'></span>
 		</div>
 
 		<hr />
 
-		<div id='output' style='border:1px solid #DDD; padding: 8px;'></div>
-		<input type='text' id='profileName' />
-		<input type='text' id='profileRole' />
-		<a href='#' id='profileSave'>save</a>
+
+		<!-- Do Not change. This kicks off the app -->
 		<script type='text/javascript' data-main='/_js/main.js' src='//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.4/require.min.js'></script>
 	</body>
 </html>

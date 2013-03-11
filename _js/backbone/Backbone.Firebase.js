@@ -171,7 +171,7 @@ define(['Backbone', 'Firebase'], function(Backbone, Firebase) {
 					} else {
 						//If not being pushed, just set the values.
 						if (_.has(options, 'priority')) {
-							createByPrioritySet();
+							createByPrioritySet(ref, model, options);
 						} else {
 							createBySet(ref, model, options);
 						}

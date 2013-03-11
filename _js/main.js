@@ -24,6 +24,7 @@ requirejs.config({
 			'SandboxCollection': 'backbone/collections/sandboxes',
 			'Router': 'backbone/routers/router',
 			'LoginView': 'backbone/views/login',
+			'UserView': 'backbone/views/user',
 			'SandboxView': 'backbone/views/sandbox',
 			'SandboxesView': 'backbone/views/sandboxes',
 			//Miscellaneous
@@ -51,7 +52,8 @@ require(['utils',
 				 'LoginModel',
 				 'UserModel',
 				 'Router',
-				 'LoginView'],
+				 'LoginView',
+				 'UserView'],
 	function(utils,
 					 Firebase,
 					 Backbone,
@@ -60,7 +62,8 @@ require(['utils',
 					 LoginModel,
 					 UserModel,
 					 Router,
-					 LoginView)
+					 LoginView,
+					 UserView)
 	{	
 		utils.safeConsole();
 		//syncOverride();
@@ -80,10 +83,15 @@ require(['utils',
 		var loginView = new LoginView({
 			model: login
 		});
+		var userView = new UserView({
+			model: user
+		});
 
 		//Set up some listeners:
 		login.listenTo(router, 'authData', login.authDataListener);
 		user.listenTo(login, 'loggedIn', user.loggedInListener);
+
+		loginView.listenTo(user, 'noUserSaved', loginView.displayMessage);
 
 		//Start the app
 		Backbone.history.start({pushState: true});
